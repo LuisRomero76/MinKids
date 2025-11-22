@@ -43,4 +43,11 @@ export class UserService {
     return this.usersRepository.findOneBy({ email })
   }
 
+  buscarDatosPorEmail(email: string) {
+    return this.usersRepository.findOne({
+      where: { email },
+      select: [ 'user_id', 'name', 'email', 'rol', 'code' ]
+    })
+  }
+
 }
