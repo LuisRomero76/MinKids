@@ -19,7 +19,10 @@ export class User {
     @Column({ type: 'enum', default: Role.HIJO, enum: Role })
     rol: Role;
 
-    @Column({ type: 'varchar', length: 15 })
-    code: string;
+    @Column({ type: 'varchar', length: 15, unique: true, nullable: true })
+    code?: string | null;
+
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    createdAt: Date;
 
 }

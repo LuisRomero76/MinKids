@@ -46,8 +46,17 @@ export class UserService {
   buscarDatosPorEmail(email: string) {
     return this.usersRepository.findOne({
       where: { email },
-      select: [ 'user_id', 'name', 'email', 'rol', 'code' ]
+      select: [ 'user_id', 'name', 'email', 'password', 'rol', 'code' ]
     })
+  }
+
+  buscarPorCodigo(code: string) {
+    return this.usersRepository.findOneBy({ code })
+  }
+
+  async crearUsuario(userData: Partial<User>) {
+    const nuevoUsuario = this.usersRepository.create(userData);
+    return await this.usersRepository.save(nuevoUsuario);
   }
 
 }
