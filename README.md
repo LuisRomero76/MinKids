@@ -1,98 +1,334 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# API MinKids - Control Parental
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Backend desarrollado con NestJS, TypeORM y JWT para una aplicación móvil de control parental.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Estructura del Proyecto
 
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
-
-```bash
-$ pnpm install
+```
+src/
+├── auth/               # Autenticación y JWT
+├── user/               # Gestión de usuarios
+├── parent-children/    # Relación padre-hijo
+├── applications/       # Catálogo de apps
+├── child-app-limits/   # Límites de uso de apps
+├── child-app-usage/    # Registro de uso de apps
+├── child-location/     # Ubicación de los hijos
+└── Common/             # Enums, guards y decorators
 ```
 
-## Compile and run the project
+## Endpoints
 
-```bash
-# development
-$ pnpm run start
+### 🔐 Autenticación (`/auth`)
 
-# watch mode
-$ pnpm run start:dev
+#### Registro
+```http
+POST /auth/register
+Content-Type: application/json
 
-# production mode
-$ pnpm run start:prod
+{
+  "name": "Juan Pérez",
+  "email": "juan@example.com",
+  "password": "password123",
+  "rol": "padre"
+}
 ```
 
-## Run tests
+#### Login
+```http
+POST /auth/login
+Content-Type: application/json
 
-```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+{
+  "email": "juan@example.com",
+  "password": "password123"
+}
 ```
 
-## Deployment
+---
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### 👥 Usuarios (`/user`)
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Todos los endpoints requieren autenticación (Bearer token).
 
-```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+#### Listar todos los usuarios
+```http
+GET /user
+Authorization: Bearer {token}
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+#### Obtener usuario por ID
+```http
+GET /user/:id
+Authorization: Bearer {token}
+```
 
-## Resources
+---
 
-Check out a few resources that may come in handy when working with NestJS:
+### 👨‍👧 Relación Padre-Hijo (`/parent-children`)
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+**Requiere rol: PADRE**
 
-## Support
+#### Agregar hijo por código
+```http
+POST /parent-children/add
+Authorization: Bearer {token}
+Content-Type: application/json
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+{
+  "child_code": "ABC123"
+}
+```
 
-## Stay in touch
+#### Listar mis hijos
+```http
+GET /parent-children/my-children
+Authorization: Bearer {token}
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+#### Eliminar vínculo con hijo
+```http
+DELETE /parent-children/:child_id
+Authorization: Bearer {token}
+```
 
-## License
+---
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### 📱 Aplicaciones (`/applications`)
+
+**Requiere rol: PADRE**
+
+#### Crear aplicación
+```http
+POST /applications
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "name": "TikTok",
+  "package_name": "com.zhiliaoapp.musically",
+  "icon_url": "https://example.com/icon.png"
+}
+```
+
+#### Listar todas las aplicaciones
+```http
+GET /applications
+Authorization: Bearer {token}
+```
+
+#### Obtener aplicación por ID
+```http
+GET /applications/:id
+Authorization: Bearer {token}
+```
+
+#### Actualizar aplicación
+```http
+PATCH /applications/:id
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "name": "TikTok Updated",
+  "icon_url": "https://example.com/new-icon.png"
+}
+```
+
+#### Eliminar aplicación
+```http
+DELETE /applications/:id
+Authorization: Bearer {token}
+```
+
+---
+
+### ⏱️ Límites de Uso (`/child-app-limits`)
+
+**Requiere rol: PADRE**
+
+#### Asignar límite
+```http
+POST /child-app-limits
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "child_id": 2,
+  "app_id": 1,
+  "daily_limit_minutes": 60,
+  "enabled": true
+}
+```
+
+#### Actualizar límite
+```http
+PATCH /child-app-limits/:id
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "daily_limit_minutes": 120,
+  "enabled": false
+}
+```
+
+#### Obtener límites de un hijo
+```http
+GET /child-app-limits/child/:child_id
+Authorization: Bearer {token}
+```
+
+#### Eliminar límite
+```http
+DELETE /child-app-limits/:id
+Authorization: Bearer {token}
+```
+
+---
+
+### 📊 Registro de Uso (`/child-app-usage`)
+
+#### Registrar uso (desde app del hijo)
+```http
+POST /child-app-usage/register
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "child_id": 2,
+  "app_id": 1,
+  "usage_minutes": 30,
+  "date": "2025-11-22"
+}
+```
+
+#### Obtener uso diario (solo padres)
+```http
+GET /child-app-usage/daily/:child_id?date=2025-11-22
+Authorization: Bearer {token}
+```
+
+#### Obtener uso mensual (solo padres)
+```http
+GET /child-app-usage/monthly/:child_id?year=2025&month=11
+Authorization: Bearer {token}
+```
+
+#### Obtener uso por app (solo padres)
+```http
+GET /child-app-usage/by-app/:child_id/:app_id?fecha_inicio=2025-11-01&fecha_fin=2025-11-30
+Authorization: Bearer {token}
+```
+
+---
+
+### 📍 Ubicación (`/child-location`)
+
+#### Registrar ubicación (desde app del hijo)
+```http
+POST /child-location/register
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "child_id": 2,
+  "latitude": -12.0464,
+  "longitude": -77.0428
+}
+```
+
+#### Obtener ubicación actual (solo padres)
+```http
+GET /child-location/current/:child_id
+Authorization: Bearer {token}
+```
+
+#### Obtener histórico de ubicaciones (solo padres)
+```http
+GET /child-location/history/:child_id?fecha_inicio=2025-11-01T00:00:00&fecha_fin=2025-11-22T23:59:59
+Authorization: Bearer {token}
+```
+
+---
+
+## Seguridad
+
+### Guards Implementados
+
+1. **AuthGuard**: Verifica que el usuario esté autenticado con JWT
+2. **RolesGuard**: Verifica que el usuario tenga el rol necesario
+
+### Roles
+
+- **padre**: Puede gestionar hijos, límites, ver estadísticas y ubicaciones
+- **hijo**: Puede registrar uso de apps y ubicación
+
+### Validaciones
+
+- Verificación de vínculos padre-hijo antes de permitir acciones
+- Validaciones con `class-validator` en todos los DTOs
+- Manejo de errores con excepciones de NestJS
+
+## Base de Datos
+
+### Tablas Principales
+
+1. **user**: Usuarios (padres e hijos)
+2. **parent_child**: Relación padre-hijo
+3. **application**: Catálogo de aplicaciones
+4. **application_limit**: Límites de uso por hijo y app
+5. **usage_time**: Registro de uso real
+6. **location**: Registro de ubicaciones
+
+### Relaciones
+
+- `parent_child` → `user` (ManyToOne con parent y child)
+- `application_limit` → `user` (ManyToOne)
+- `application_limit` → `application` (ManyToOne)
+- `usage_time` → `user` (ManyToOne)
+- `usage_time` → `application` (ManyToOne)
+- `location` → `user` (ManyToOne)
+
+## Variables de Entorno
+
+Crear archivo `.env`:
+
+```env
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=your_password
+DB_DATABASE=minkids
+SECRET_KEY=your_jwt_secret_key
+```
+
+## Instalación
+
+```bash
+# Instalar dependencias
+pnpm install
+
+# Ejecutar en modo desarrollo
+pnpm run start:dev
+
+# Construir para producción
+pnpm run build
+
+# Ejecutar en producción
+pnpm run start:prod
+```
+
+## Flujo de Uso
+
+1. **Padre se registra** → Obtiene código único
+2. **Hijo se registra** → Obtiene código único
+3. **Padre agrega hijo** → Usa el código del hijo
+4. **Padre configura apps** → Crea catálogo de apps
+5. **Padre asigna límites** → Define minutos por app
+6. **App del hijo** → Registra uso en tiempo real
+7. **App del hijo** → Envía ubicación periódicamente
+8. **Padre consulta** → Ve estadísticas y ubicación
+
+---
+
+Desarrollado con ❤️ para MinKids

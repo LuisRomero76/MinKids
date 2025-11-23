@@ -3,7 +3,11 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ParentChildrenModule } from './parent_children/parent_children.module';
+import { ParentChildrenModule } from './parent-children/parent-children.module';
+import { ApplicationsModule } from './applications/applications.module';
+import { ChildAppLimitsModule } from './child-app-limits/child-app-limits.module';
+import { ChildAppUsageModule } from './child-app-usage/child-app-usage.module';
+import { ChildLocationModule } from './child-location/child-location.module';
 
 @Module({
   imports: [
@@ -23,7 +27,12 @@ import { ParentChildrenModule } from './parent_children/parent_children.module';
     }),
 
     AuthModule,    
-    UserModule, ParentChildrenModule
+    UserModule,
+    ParentChildrenModule,
+    ApplicationsModule,
+    ChildAppLimitsModule,
+    ChildAppUsageModule,
+    ChildLocationModule
   ],
   controllers: [],
   providers: [],
