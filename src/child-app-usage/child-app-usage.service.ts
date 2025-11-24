@@ -40,6 +40,44 @@ export class ChildAppUsageService {
     return await this.usageRepository.save(nuevoRegistro);
   }
 
+  async sincronizarUso(child_id: number, usageData: Record<string, number>, dateStr: string) {
+    const date = new Date(dateStr);
+    const aplicaciones = await this.applicationsService.listarTodas();
+    
+    const registros: ChildAppUsageLog[] = [];
+    for (const app of aplicaciones) {
+      const minutes = usageData[app.package_name];
+      if (minutes && minutes > 0) {
+        const registroExistente = await this.usageRepository.findOne({
+          where: { child_id, app_id: app.app_id, date }
+        });
+
+        if (registroExistente) {
+          registroExistente.usage_minutes = minutes;
+          registros.push(await this.usageRepository.save(registroExistente));
+        } else {
+          const nuevoRegistro = this.usageRepository.create({
+            child_id,
+            app_id: app.app_id,
+            usage_minutes: minutes,
+            date
+          });
+          registros.push(await this.usageRepository.save(nuevoRegistro));
+        }
+      }
+    }
+
+    return { success: true, synced: registros.length };
+  }
+
+  async obtenerUsoDelDia(child_id: number, dateStr: string) {
+    const date = new Date(dateStr);
+    return await this.usageRepository.find({
+      where: { child_id, date },
+      relations: ['application']
+    });
+  }
+
   async obtenerUsoDiario(parent_id: number, child_id: number, date: string) {
     const tieneVinculo = await this.parentChildrenService.verificarVinculo(
       parent_id,

@@ -100,8 +100,13 @@ export class AuthService {
 
         return {
             token,
-            email,
-            rol: user.rol
+            user: {
+                user_id: user.user_id,
+                email: user.email,
+                name: user.name,
+                rol: user.rol,
+                code: user.code,
+            }
         };
     }
 

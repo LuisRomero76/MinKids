@@ -9,32 +9,36 @@ import { Role } from 'src/Common/enums/rol.enum';
 
 @Controller('applications')
 @UseGuards(AuthGuard, RolesGuard)
-@Roles(Role.PADRE)
 export class ApplicationsController {
   
   constructor(private readonly applicationsService: ApplicationsService) {}
 
   @Post()
+  @Roles(Role.PADRE)
   crear(@Body() createApplicationDto: CreateApplicationDto) {
     return this.applicationsService.crear(createApplicationDto);
   }
 
   @Get()
+  @Roles(Role.PADRE, Role.HIJO)
   listarTodas() {
     return this.applicationsService.listarTodas();
   }
 
   @Get(':id')
+  @Roles(Role.PADRE, Role.HIJO)
   buscarPorId(@Param('id') id: string) {
     return this.applicationsService.buscarPorId(+id);
   }
 
   @Patch(':id')
+  @Roles(Role.PADRE)
   actualizar(@Param('id') id: string, @Body() updateApplicationDto: UpdateApplicationDto) {
     return this.applicationsService.actualizar(+id, updateApplicationDto);
   }
 
   @Delete(':id')
+  @Roles(Role.PADRE)
   eliminar(@Param('id') id: string) {
     return this.applicationsService.eliminar(+id);
   }

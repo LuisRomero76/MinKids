@@ -8,21 +8,29 @@ import { Role } from 'src/Common/enums/rol.enum';
 
 @Controller('parent-children')
 @UseGuards(AuthGuard, RolesGuard)
-@Roles(Role.PADRE)
 export class ParentChildrenController {
   
   constructor(private readonly parentChildrenService: ParentChildrenService) {}
 
   @Post('add')
+  @Roles(Role.PADRE)
   agregarHijo(@Request() req, @Body() addChildDto: AddChildDto) {
     const parent_id = req.user.user_id;
     return this.parentChildrenService.agregarHijo(parent_id, addChildDto.child_code);
   }
 
   @Get('my-children')
+  @Roles(Role.PADRE)
   listarHijos(@Request() req) {
     const parent_id = req.user.user_id;
     return this.parentChildrenService.listarHijos(parent_id);
+  }
+
+  @Get('my-parents')
+  @Roles(Role.HIJO)
+  listarPadres(@Request() req) {
+    const child_id = req.user.user_id;
+    return this.parentChildrenService.listarPadres(child_id);
   }
 
   @Delete(':child_id')

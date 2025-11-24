@@ -42,13 +42,25 @@ export class ParentChildrenService {
       child_id: hijo.user_id
     });
 
-    return await this.parentChildRepository.save(nuevoVinculo);
+    try {
+      return await this.parentChildRepository.save(nuevoVinculo);
+    } catch (e: any) {
+      // Mejorar mensaje cuando falla por FK u otros errores
+      throw new BadRequestException(e?.message || 'No se pudo crear el vínculo');
+    }
   }
 
   async listarHijos(parent_id: number) {
     return await this.parentChildRepository.find({
       where: { parent_id },
       relations: ['child']
+    });
+  }
+
+  async listarPadres(child_id: number) {
+    return await this.parentChildRepository.find({
+      where: { child_id },
+      relations: ['parent']
     });
   }
 

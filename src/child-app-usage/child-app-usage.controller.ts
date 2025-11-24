@@ -12,9 +12,29 @@ export class ChildAppUsageController {
   
   constructor(private readonly childAppUsageService: ChildAppUsageService) {}
 
+  @UseGuards(RolesGuard)
+  @Roles(Role.HIJO)
   @Post('register')
-  registrarUso(@Body() registerUsageDto: RegisterUsageDto) {
-    return this.childAppUsageService.registrarUso(registerUsageDto);
+  registrarUso(@Request() req, @Body() registerUsageDto: RegisterUsageDto) {
+    const child_id = req.user.user_id;
+    return this.childAppUsageService.registrarUso({ ...registerUsageDto, child_id });
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(Role.HIJO)
+  @Post('sync')
+  async sincronizarUso(@Request() req, @Body() body: { usage_data: Record<string, number>; date: string }) {
+    const child_id = req.user.user_id;
+    return this.childAppUsageService.sincronizarUso(child_id, body.usage_data, body.date);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(Role.HIJO)
+  @Get('today')
+  async obtenerMiUsoHoy(@Request() req, @Query('date') date?: string) {
+    const child_id = req.user.user_id;
+    const fecha = date || new Date().toISOString().split('T')[0];
+    return this.childAppUsageService.obtenerUsoDelDia(child_id, fecha);
   }
 
   @UseGuards(RolesGuard)

@@ -17,13 +17,15 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync(
-        token,
-        { secret: process.env.SECRET_KEY }
-      );
+      const payload = await this.jwtService.verifyAsync(token, { secret: process.env.SECRET_KEY });
 
-      request['user'] = payload;
-      console.log(process.env.SECRET_KEY);
+      // Normalizar estructura del usuario para el resto de la app
+      request['user'] = {
+        user_id: payload.sub ?? payload.user_id, // asegurar disponibilidad de user_id
+        email: payload.email,
+        rol: payload.rol,
+        ...payload, // mantener resto (por si se usa en otro sitio)
+      };
       
     } catch (error) {
       throw new UnauthorizedException('Token de autenticación inválido');

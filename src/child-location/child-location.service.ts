@@ -66,4 +66,34 @@ export class ChildLocationService {
     });
   }
 
+  async obtenerUbicacionesDeMisHijos(parent_id: number) {
+    const hijos = await this.parentChildrenService.listarHijos(parent_id);
+    const resultados: Array<{
+      child_id: number;
+      latitude: number;
+      longitude: number;
+      captured_at: Date;
+      child?: any;
+    }> = [];
+    
+    for (const relacion of hijos) {
+      const child_id = relacion.child_id;
+      const ubicacion = await this.locationRepository.findOne({
+        where: { child_id },
+        order: { captured_at: 'DESC' },
+      });
+      
+      if (ubicacion) {
+        resultados.push({
+          child_id,
+          latitude: Number(ubicacion.latitude),
+          longitude: Number(ubicacion.longitude),
+          captured_at: ubicacion.captured_at,
+          child: relacion.child ?? undefined,
+        });
+      }
+    }
+    return resultados;
+  }
+
 }

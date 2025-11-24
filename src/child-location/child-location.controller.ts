@@ -43,4 +43,12 @@ export class ChildLocationController {
     );
   }
 
+  @UseGuards(RolesGuard)
+  @Roles(Role.PADRE)
+  @Get('my-children')
+  obtenerUbicacionesDeMisHijos(@Request() req) {
+    const parent_id = req.user.user_id;
+    return this.childLocationService.obtenerUbicacionesDeMisHijos(parent_id);
+  }
+
 }

@@ -111,4 +111,11 @@ export class ChildAppLimitsService {
     return { message: 'Límite eliminado correctamente' };
   }
 
+  async obtenerMisLimites(child_id: number) {
+    return await this.limitRepository.find({
+      where: { child_id },
+      relations: ['application']
+    });
+  }
+
 }

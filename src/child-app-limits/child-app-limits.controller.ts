@@ -9,18 +9,19 @@ import { Role } from 'src/Common/enums/rol.enum';
 
 @Controller('child-app-limits')
 @UseGuards(AuthGuard, RolesGuard)
-@Roles(Role.PADRE)
 export class ChildAppLimitsController {
   
   constructor(private readonly childAppLimitsService: ChildAppLimitsService) {}
 
   @Post()
+  @Roles(Role.PADRE)
   asignarLimite(@Request() req, @Body() createLimitDto: CreateLimitDto) {
     const parent_id = req.user.user_id;
     return this.childAppLimitsService.asignarLimite(parent_id, createLimitDto);
   }
 
   @Patch(':id')
+  @Roles(Role.PADRE)
   actualizarLimite(
     @Request() req,
     @Param('id') id: string,
@@ -31,12 +32,21 @@ export class ChildAppLimitsController {
   }
 
   @Get('child/:child_id')
+  @Roles(Role.PADRE)
   obtenerLimitesDeHijo(@Request() req, @Param('child_id') child_id: string) {
     const parent_id = req.user.user_id;
     return this.childAppLimitsService.obtenerLimitesDeHijo(parent_id, +child_id);
   }
 
+  @Get('my-limits')
+  @Roles(Role.HIJO)
+  obtenerMisLimites(@Request() req) {
+    const child_id = req.user.user_id;
+    return this.childAppLimitsService.obtenerMisLimites(child_id);
+  }
+
   @Delete(':id')
+  @Roles(Role.PADRE)
   eliminarLimite(@Request() req, @Param('id') id: string) {
     const parent_id = req.user.user_id;
     return this.childAppLimitsService.eliminarLimite(parent_id, +id);
